@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carnet JMH</title>
+<meta name="theme-color" content="#ff924f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Carnet JMH">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="icono-192.png">
+<link rel="apple-touch-icon" href="icono-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --naranja:#ff924f; --naranja-prof:#b9531a; --verde-osc:#0c4a2a; --tinta:#2a1f16;
+  }
+  *{box-sizing:border-box;margin:0}
+  html,body{min-height:100%}
+  body{
+    font-family:"Josefin Sans",system-ui,sans-serif;color:var(--tinta);
+    background-color:#c8202f;
+    background-image:repeating-linear-gradient(45deg,rgba(15,15,15,.62) 0 15px,transparent 15px 30px),repeating-linear-gradient(-45deg,rgba(15,15,15,.62) 0 15px,transparent 15px 30px);
+    background-attachment:fixed;
+    padding:max(14px,env(safe-area-inset-top)) 14px max(18px,env(safe-area-inset-bottom));
+    display:flex;justify-content:center;
+  }
+  .envoltorio{width:100%;max-width:440px;display:flex;flex-direction:column}
+  .saludo{text-align:center;padding:2px 0 12px}
+  .saludo span{display:inline-block;background:rgba(255,248,236,.95);border-radius:999px;padding:6px 22px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+  .saludo small{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8a5a5a}
+  .saludo b{display:block;font-family:"Permanent Marker",cursive;font-size:21px;font-weight:400;color:var(--naranja-prof)}
+
+  .carnet{background:#fff;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.4);border:4px solid var(--naranja);overflow:hidden;display:flex;flex-direction:column}
+  .cab{background:var(--naranja);display:flex;align-items:center;gap:12px;padding:10px 14px;color:var(--verde-osc)}
+  .cab img{width:70px;height:70px;background:#fff;border-radius:50%;padding:3px}
+  .cab div{font-family:"Permanent Marker",cursive;font-size:15px;line-height:1.25;text-transform:uppercase;letter-spacing:.03em}
+
+  .medio{display:flex;gap:16px;padding:18px 18px 0;align-items:center}
+  .foto{width:92px;height:116px;border-radius:12px;border:2.5px solid var(--naranja);color:var(--naranja-prof);background:linear-gradient(#fff3e8,#ffd9bd);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:600;text-align:center;gap:6px;flex:none;overflow:hidden;cursor:pointer;padding:0}
+  .foto svg{width:44px;height:44px;opacity:.7}
+  .foto img{width:100%;height:100%;object-fit:cover;display:block}
+  .activa{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--verde-osc);margin-bottom:4px}
+  .activa i{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7ff0a4,#1fb85a 60%,#128a42);box-shadow:0 0 0 2px #fff,0 0 6px 1px rgba(31,184,90,.8)}
+  .nombre{font-family:"Permanent Marker",cursive;font-size:23px;line-height:1.2;color:var(--verde-osc);word-break:break-word}
+
+  .rotulo{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#8a5a3a;font-weight:600}
+  .datos{padding:20px 18px 0;display:grid;grid-template-columns:1fr 1fr;gap:14px 12px}
+  .dato b{display:block;font-size:23px;margin-top:1px}
+  .dato.centro{grid-column:1/-1;text-align:center}
+  .acts{padding:18px 18px 0;text-align:center}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;justify-content:center}
+  .chip{background:#fff1e4;border:1.5px solid var(--naranja);color:var(--verde-osc);font-weight:700;font-size:15px;padding:5px 14px;border-radius:999px}
+
+  .qrcaja{margin:20px 18px 18px;background:#fff;border:2px dashed var(--naranja);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:14px}
+  .qr{width:112px;height:112px;flex:none}
+  .qr svg,.qr img{width:100%;height:100%;display:block}
+  .qrcaja p{font-size:14px;line-height:1.35;color:#5c4e3d}
+  .qrcaja p b{display:block;font-size:16px;margin-bottom:2px;color:var(--naranja-prof)}
+  .pie{background:var(--naranja);color:var(--verde-osc);text-align:center;font-size:14px;font-weight:700;padding:13px 10px 15px;letter-spacing:.03em}
+
+  .aviso{margin-top:14px;background:rgba(255,248,236,.96);border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.4;color:var(--tinta);box-shadow:0 2px 8px rgba(0,0,0,.25)}
+  .aviso b{color:var(--naranja-prof)}
+  .aviso[hidden]{display:none}
+
+  /* Pantallas de estado (cargando / no valido / comprobacion) */
+  .estado{background:#fff;border:4px solid var(--naranja);border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.4);padding:28px 20px;text-align:center;overflow:hidden}
+  .estado img{width:84px;height:84px;margin-bottom:10px}
+  .estado h1{font-family:"Permanent Marker",cursive;font-weight:400;font-size:26px;line-height:1.2;margin:6px 0 8px}
+  .estado p{font-size:16px;line-height:1.4}
+  .ok h1{color:#128a42}
+  .ko h1{color:#b3202f}
+  .gran{font-size:64px;line-height:1}
+  .carga{font-size:17px;color:var(--tinta)}
+</style>
+</head>
+<body>
+<div class="envoltorio" id="app"><div class="estado"><img src="logo.png" alt=""><p class="carga">Cargando tu carnet…</p></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+// URL del servicio que consulta la hoja de socios (se rellena al publicar el Apps Script)
+const API = 'https://script.google.com/macros/s/AKfycbygqNvyAZhd2ux8o__NbCyV1d2k9kJ8WoAbU4vyn4dUU82KK3fY7eK7n-GP6CFT8Mfw9A/exec';
+
+const $app = document.getElementById('app');
+const params = new URLSearchParams(location.search);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function guardar(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+function leer(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+function borrar(k){ try { localStorage.removeItem(k); } catch(e){} }
+const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+
+async function consultar(accion, token){
+  const r = await fetch(API + '?action=' + accion + '&t=' + encodeURIComponent(token), { redirect: 'follow' });
+  return r.json();
+}
+
+function pantallaNoValido(msg){
+  $app.innerHTML = '<div class="estado ko"><img src="logo.png" alt=""><div class="gran">❌</div><h1>NO VÁLIDO</h1><p>' + esc(msg || 'Este carnet no está activo.') + '</p></div>';
+}
+
+/* ---------- Modo comprobacion (lo abre el comercio al escanear el QR) ---------- */
+async function modoComprobar(token){
+  try {
+    const d = await consultar('check', token);
+    if (d && d.ok && d.activo) {
+      $app.innerHTML = '<div class="estado ok"><img src="logo.png" alt=""><div class="gran">✅</div><h1>SOCIO ACTIVO</h1><p><b>' + esc(d.nombre) + '</b><br>' + esc(d.num) + '</p><p style="margin-top:10px;font-size:14px;color:#6b5f52">Asociación Cultural Escuela de Jota María de Huerva</p></div>';
+    } else pantallaNoValido('Este carnet no está activo o no existe.');
+  } catch(e){
+    $app.innerHTML = '<div class="estado ko"><img src="logo.png" alt=""><h1>Sin conexión</h1><p>No se ha podido comprobar el carnet. Prueba de nuevo con cobertura.</p></div>';
+  }
+}
+
+/* ---------- Carnet del socio ---------- */
+function quitarClave(){ borrar('jmh_datos'); }
+
+function ponerManifest(token){
+  // Manifest generado al vuelo para que el icono de inicio abra directamente SU carnet
+  const base = location.origin + location.pathname.replace(/[^/]*$/, '');
+  const m = {
+    name: 'Carnet JMH', short_name: 'Carnet JMH',
+    start_url: base + '?t=' + encodeURIComponent(token), scope: base,
+    display: 'standalone', background_color: '#c8202f', theme_color: '#ff924f',
+    icons: [ { src: base + 'icono-192.png', sizes: '192x192', type: 'image/png' },
+             { src: base + 'icono-512.png', sizes: '512x512', type: 'image/png' } ]
+  };
+  const l = document.createElement('link');
+  l.rel = 'manifest';
+  l.href = URL.createObjectURL(new Blob([JSON.stringify(m)], { type: 'application/manifest+json' }));
+  document.head.appendChild(l);
+}
+
+function pintarCarnet(d, token){
+  const chips = (d.actividades || []).map(a => '<span class="chip">' + esc(a) + '</span>').join('');
+  const acts = chips ? '<div class="acts"><div class="rotulo">Mis actividades</div><div class="chips">' + chips + '</div></div>' : '';
+  const base = location.origin + location.pathname.replace(/[^/]*$/, '');
+  const qr = qrcode(0, 'M'); qr.addData(base + '?v=' + token); qr.make();
+  const partes = String(d.nombre).trim().split(/\s+/);
+  const corto = partes.length > 2 ? partes.slice(0, partes.length - 2).join(' ') : partes[0];
+  const foto = leer('jmh_foto');
+  $app.innerHTML =
+    '<div class="saludo"><span><small>Hola</small><b>' + esc(corto) + '</b></span></div>' +
+    '<div class="carnet">' +
+      '<div class="cab"><img src="logo.png" alt=""><div>Asociación Cultural<br>Escuela de Jota<br>María de Huerva</div></div>' +
+      '<div class="medio">' +
+        '<button class="foto" id="foto" type="button" aria-label="Poner mi foto">' + (foto ? '<img src="' + foto + '" alt="Mi foto">' :
+          '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z"/></svg>Toca para<br>poner tu foto') + '</button>' +
+        '<div><div class="activa"><i></i>Socio/a activo/a</div><div class="nombre">' + esc(d.nombre) + '</div></div>' +
+      '</div>' +
+      '<div class="datos">' +
+        '<div class="dato"><div class="rotulo">Nº de socio</div><b>' + esc(d.num) + '</b></div>' +
+        (d.dni ? '<div class="dato"><div class="rotulo">DNI</div><b>' + esc(d.dni) + '</b></div>' : '') +
+        '<div class="dato' + (d.dni ? ' centro' : '') + '"><div class="rotulo">Socio/a desde</div><b>' + esc(d.desde) + '</b></div>' +
+      '</div>' + acts +
+      '<div class="qrcaja"><div class="qr">' + qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true }) + '</div>' +
+        '<p><b>Comprobar carnet</b>Escanéalo con la cámara</p></div>' +
+      '<div class="pie">Preséntalo en los comercios con descuento</div>' +
+    '</div>' +
+    '<div class="aviso" id="aviso" hidden></div>';
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.style.display = 'none';
+  document.body.appendChild(inp);
+  document.getElementById('foto').onclick = () => inp.click();
+  inp.onchange = () => { if (inp.files[0]) reducirFoto(inp.files[0], () => pintarCarnet(d, token)); };
+  avisoInstalar();
+}
+
+function reducirFoto(file, listo){
+  const img = new Image();
+  img.onload = () => {
+    const W = 240, H = 300, c = document.createElement('canvas'); c.width = W; c.height = H;
+    const ctx = c.getContext('2d');
+    const r = Math.max(W / img.width, H / img.height), w = img.width * r, h = img.height * r;
+    ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+    guardar('jmh_foto', c.toDataURL('image/jpeg', 0.8));
+    URL.revokeObjectURL(img.src); listo();
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+function avisoInstalar(){
+  const a = document.getElementById('aviso');
+  if (!a || standalone) return;
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  a.innerHTML = ios
+    ? '<b>Ten el carnet como icono:</b> pulsa el botón <b>Compartir</b> (el cuadrado con la flecha) y elige <b>«Añadir a pantalla de inicio»</b>.'
+    : '<b>Ten el carnet como icono:</b> pulsa los <b>tres puntos ⋮</b> del navegador y elige <b>«Añadir a pantalla de inicio»</b> (o «Instalar aplicación»).';
+  a.hidden = false;
+}
+
+async function modoCarnet(token){
+  const guardado = leer('jmh_datos');
+  if (guardado) { try { const g = JSON.parse(guardado); if (g.token === token) pintarCarnet(g.d, token); } catch(e){} }
+  ponerManifest(token);
+  try {
+    const d = await consultar('data', token);
+    if (d && d.ok && d.activo) { guardar('jmh_datos', JSON.stringify({ token, d })); guardar('jmh_t', token); pintarCarnet(d, token); }
+    else { quitarClave(); pantallaNoValido('Este carnet no está activo. Si crees que es un error, habla con la asociación.'); }
+  } catch(e){
+    if (!leer('jmh_datos')) $app.innerHTML = '<div class="estado ko"><img src="logo.png" alt=""><h1>Sin conexión</h1><p>No se ha podido cargar el carnet. Prueba de nuevo con cobertura.</p></div>';
+  }
+}
+
+(function inicio(){
+  const v = params.get('v');
+  if (v) return modoComprobar(v);
+  const t = params.get('t') || leer('jmh_t');
+  if (t) return modoCarnet(t);
+  pantallaNoValido('Abre el enlace personal que te llegó por email.');
+})();
+</script>
+</body>
+</html>
