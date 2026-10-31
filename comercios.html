@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Comercios con descuento · Carnet JMH</title>
+<title>Comercios con ventajas · Carnet JMH</title>
 <meta name="theme-color" content="#ff924f">
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" href="icono-192.png">
@@ -41,7 +41,7 @@
 </head>
 <body>
 <div class="envoltorio"><div class="panel">
-  <div class="cab"><img src="logo.png" alt=""><h1>Comercios con descuento</h1></div>
+  <div class="cab"><img src="logo.png" alt=""><h1>Comercios con ventajas</h1></div>
   <div class="cuerpo" id="lista"><p class="msg">Cargando…</p></div>
   <div class="pie"><a class="volver" id="volver" href="./">← Volver a mi carnet</a></div>
 </div></div>
@@ -51,6 +51,8 @@ const API = 'https://script.google.com/macros/s/AKfycbygqNvyAZhd2ux8o__NbCyV1d2k
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function leer(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
 function guardar(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+// Mientras sea true se muestra el aviso en vez de la lista (poner false para publicar la lista)
+const EN_CONSTRUCCION = true;
 const token = new URLSearchParams(location.search).get('t') || leer('jmh_t');
 const $l = document.getElementById('lista');
 if (token) document.getElementById('volver').href = './?t=' + encodeURIComponent(token);
@@ -71,6 +73,7 @@ function pintar(lista){
       (c.contacto ? '<div class="contacto">' + enlace(c.contacto) + '</div>' : '') + '</div>').join('');
 }
 (async function(){
+  if (EN_CONSTRUCCION) { $l.innerHTML = '<p class="msg"><b>Estamos trabajando en ello.</b></p>'; return; }
   const g = leer('jmh_comercios');
   if (g) { try { pintar(JSON.parse(g)); } catch(e){} }
   if (!token) { $l.innerHTML = '<p class="msg">Abre esta página desde tu carnet.</p>'; return; }
