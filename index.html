@@ -141,7 +141,11 @@ function pintarCarnet(d, token){
   const base = location.origin + location.pathname.replace(/[^/]*$/, '');
   const qr = qrcode(0, 'M'); qr.addData(base + '?v=' + token); qr.make();
   const partes = String(d.nombre).trim().split(/\s+/);
-  const corto = partes.length > 2 ? partes.slice(0, partes.length - 2).join(' ') : partes[0];
+  // Nombre de pila: quita los dos apellidos y corta ante partículas (de, del, de la...)
+  let pila = partes.length > 2 ? partes.slice(0, partes.length - 2) : [partes[0]];
+  const ip = pila.findIndex((p, j) => j > 0 && /^(de|del|la|las|los|y)$/i.test(p));
+  if (ip > 0) pila = pila.slice(0, ip);
+  const corto = pila.join(' ');
   const foto = leer('jmh_foto');
   $app.innerHTML =
     '<div class="saludo"><span><small>Hola</small><b>' + esc(corto) + '</b></span></div>' +
